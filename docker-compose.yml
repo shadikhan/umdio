@@ -22,7 +22,6 @@ services:
       - mongodb
     links:
       - mongodb
-      - chromedriver
     environment:
       - MONGO_RUBY_DRIVER_HOST=mongodb
       - MONGO_RUBY_DRIVER_PORT=27017
