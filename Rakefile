@@ -83,6 +83,13 @@ namespace :scrape do
   task :buildings do
     sh 'ruby app/scrapers/buildings.rb'
   end
+
+  desc "Run headless scraper"
+  task :headless do
+    # Testudo updated in September for Spring, Fed for fall
+    # if fall is updated, we want to get the next year's courses
+    sh 'ruby app/scrapers/headless/courses.rb'
+  end
 end
 
 ###### Server

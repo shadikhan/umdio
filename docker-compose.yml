@@ -10,10 +10,19 @@ services:
       - ./data/db:/data/db
     ports:
       - 27017:27017
+  chromedriver:
+    image: robcherry/docker-chromedriver:latest
+    environment:
+      - CHROMEDRIVER_WHITELISTED_IPS=""
+    ports:
+      - 4444:4444
   umdio:
     build: .
+    depends_on:
+      - mongodb
     links:
       - mongodb
+      - chromedriver
     environment:
       - MONGO_RUBY_DRIVER_HOST=mongodb
       - MONGO_RUBY_DRIVER_PORT=27017

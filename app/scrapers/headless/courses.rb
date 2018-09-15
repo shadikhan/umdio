@@ -1,9 +1,9 @@
 require 'watir'
 
 def scrape_dep(browser)
-	browser.elements('class': 'toggle-sections-link-text').each do |elem|
-		elem.parent.click()
-	end
+	#browser.elements('class': 'toggle-sections-link-text').each do |elem|
+	#	elem.parent.click()
+	#end
 
 	browser.elements('class': 'course').each do |elem|
 		puts elem.text
@@ -11,8 +11,9 @@ def scrape_dep(browser)
 end
 
 # Init headless browser
-browser = Watir::Browser.new :chrome,  headless: true
+browser = Watir::Browser.new :chrome,  headless: true, url: "http://chromedriver:4444", :switches => ["disable-infobars", "no-sandbox"]
 browser.goto 'https://app.testudo.umd.edu/soc/'
+puts "asgfsaf"
 
 # Iterate over all the department links
 browser.elements(class: 'prefix-abbrev').each do |elem|

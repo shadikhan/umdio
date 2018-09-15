@@ -27,3 +27,5 @@ end
 group :scrape do
   gem 'nokogiri'
 end
+gem "childprocess", "~> 0.9.0"
+gem "watir", "~> 6.14"
