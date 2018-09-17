@@ -29,3 +29,4 @@ group :scrape do
 end
 gem "childprocess", "~> 0.9.0"
 gem "watir", "~> 6.14"
+gem "pg", "~> 1.1"
