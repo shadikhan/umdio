@@ -8,6 +8,7 @@ services:
       - MONGO_LOG_DIR=/dev/null
     volumes:
       - ./data/db:/data/db
+      - ./data/sqlite:/data/sqlite
     ports:
       - 27017:27017
   chromedriver:
@@ -16,12 +17,18 @@ services:
       - CHROMEDRIVER_WHITELISTED_IPS=""
     ports:
       - 4444:4444
+  postgres:
+    image: postgres
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
   umdio:
     build: .
     depends_on:
       - mongodb
+      - postgres
     links:
       - mongodb
+      - postgres
     environment:
       - MONGO_RUBY_DRIVER_HOST=mongodb
       - MONGO_RUBY_DRIVER_PORT=27017
