@@ -1,0 +1,143 @@
+openapi: 3.0.1
+info:
+  title: umd.io
+  description: |-
+    Welcome to umd.io, the open-source API for University of Maryland data. If you are building a University data-focused app, hack, or project, you’re in the right place. This site will walk you through basic API use and document all supported API calls.
+    
+    Read more about the motivation and vision for the project in the blog post.
+
+    umd.io is a GETful API. It follows RESTful conventions, but for now, you can only get data – you can’t create, update, or destroy.
+
+    The API is in version 0. We are adding, changing, and breaking things all the time. Contact the team or (preferably) create an issue on github if something isn’t working the way you think it should.
+
+    We are actively looking for contributors! Tweet, email, or otherwise get in touch with us.
+  contact:
+    email: hi@umd.io
+  license:
+    name: MIT
+    url: https://github.com/umdio/umdio/LICENSE
+  version: 0.0.0
+externalDocs:
+  description: Github
+  url: https://github.com/umdio/umdio
+servers:
+- url: https://api.umd.io/v0
+tags:
+- name: courses
+  description: Course data from Testudo
+- name: professors
+  description: Professors listed on Testudo
+- name: bus
+  description: Nextbus data
+- name: map
+  description: Building data
+paths:
+  /courses:
+    get:
+      tags:
+      - courses
+      summary: List all courses
+      description: Paginated list of all courses for a given semester
+      operationId: findCourses
+      parameters:
+      - $ref: '#/components/parameters/course_id'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+        400:
+          description: Invalid status value
+          content: {}
+components:
+  schemas:
+    Course:
+      type: object
+      properties:
+        course_id:
+          pattern: '[A-Za-z]{4}[0-9]{3}[A-Za-z][A-Za-z]?'
+          type: string
+        name:
+          type: string
+        dept_id:
+          type: string
+        semester:
+          type: integer
+        credits:
+          type: string
+        grading_method:
+          type: array
+          items:
+            type: string
+        core:
+          type: array
+          items:
+            type: string
+        gen_ed:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+        relationships:
+          type: object
+          properties:
+            coreqs:
+              type: array
+              items:
+                type: string
+            restrictions:
+              type: array
+              items:
+                type: string
+            credit_granted_for:
+              type: array
+              items:
+                type: string
+            also_offered_as:
+              type: array
+              items:
+                type: string
+            formerly:
+              type: array
+              items:
+                type: string
+            credit_only_granted_for:
+              type: array
+              items:
+                type: string
+            prereqs:
+              type: array
+              items:
+                type: string
+            restricted_to:
+              type: array
+              items:
+                type: string
+        sections:
+          type: array
+          items:
+            type: string
+    Section:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+  parameters:
+    course_id:
+      name: course_id
+      in: query
+      description: "A unique string ID with a four-letter dept_id followed by a three digit course number and an optional letter."
+      schema:
+        type: string
+      examples:
+        zero:
+          value: "CMSC132"
+        one:
+          value: "BMGT468Z"
+      required: false
