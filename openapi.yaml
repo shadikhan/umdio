@@ -31,16 +31,16 @@ tags:
   description: Nextbus data
 - name: map
   description: Building data
+- name: major
+  description: Major data
 paths:
   /courses:
     get:
       tags:
       - courses
-      summary: List all courses
+      summary: Paginated list of courses
       description: Paginated list of all courses for a given semester
       operationId: findCourses
-      parameters:
-      - $ref: '#/components/parameters/course_id'
       responses:
         200:
           description: successful operation
@@ -53,14 +53,421 @@ paths:
         400:
           description: Invalid status value
           content: {}
+  /courses/list:
+    get:
+      tags:
+      - courses
+      summary: List of trimmed course objects
+      description: Returns a list of all courses, trimmed down to name, course id, and department.
+      operationId: findAllCourses
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    course_id:
+                      type: string
+                    name:
+                      type: string
+                    department:
+                      type: string
+        400:
+          description: Invalid status value
+          content: {}
+  /courses/{course}:
+    get:
+      tags:
+      - courses
+      summary: Get course by id
+      description: Gets one or more courses by course_id
+      operationId: findCourse
+      parameters:
+        - in: 'path'
+          name: 'course'
+          required: true
+          schema:
+            type: string
+          explode: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                oneOf: 
+                  - $ref: '#/components/schemas/Course'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/Course'
+        400:
+          description: Invalid status value
+          content: {}
+  /courses/sections:
+    get:
+      tags:
+      - courses
+      summary: Paginated list of sections
+      description: Paginated list of all sections for a given semester
+      operationId: findSections
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Section'
+        400:
+          description: Invalid status value
+          content: {}
+  /courses/sections/{section}:
+    get:
+      tags:
+      - courses
+      summary: Get course by id
+      description: Gets one or more courses by section_id
+      operationId: findSectionsById
+      parameters:
+        - in: 'path'
+          name: 'section'
+          required: true
+          schema:
+            type: string
+          explode: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                oneOf: 
+                  - $ref: '#/components/schemas/Section'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/Section'
+        400:
+          description: Invalid status value
+          content: {}  
+  /courses/departments:
+    get:
+      tags:
+      - courses
+      summary: List departments
+      description: Gets one or more courses by course_id
+      operationId: findDepartments
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Department'
+        400:
+          description: Invalid status value
+          content: {}  
+  /professors:
+    get:
+      tags:
+      - professors
+      summary: Paginated list of professors
+      description: Paginated list of all professors for a given semester
+      operationId: findProfessors
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Professor'
+        400:
+          description: Invalid status value
+          content: {}
+  /map:
+    get:
+      tags:
+      - map
+      summary: Buildings
+      description: Paginated list of all professors for a given semester
+      operationId: findBuildings
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Building'
+        400:
+          description: Invalid status value
+          content: {}
+  /map/{building}:
+    get:
+      tags:
+      - map
+      summary: Get building by id
+      description: Gets one or more courses by course_id
+      operationId: findBuildingById
+      parameters:
+        - in: 'path'
+          name: 'building'
+          required: true
+          schema:
+            type: string
+          explode: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        400:
+          description: Invalid status value
+          content: {}
+  /bus/locations:
+    get:
+      tags:
+      - bus
+      summary: Paginated list of courses
+      description: Paginated list of all courses for a given semester
+      operationId: findLocations
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Route'
+        400:
+          description: Invalid status value
+          content: {}
+  /bus/routes:
+    get:
+      tags:
+      - bus
+      summary: Paginated list of courses
+      description: Paginated list of all courses for a given semester
+      operationId: findRoutes
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Route'
+        400:
+          description: Invalid status value
+          content: {}
+  /bus/routes/{route}:
+    get:
+      tags:
+      - bus
+      summary: Get course by id
+      description: Gets one or more courses by course_id
+      operationId: findRouteById
+      parameters:
+        - in: 'path'
+          name: 'route'
+          required: true
+          schema:
+            type: string
+          explode: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                oneOf: 
+                  - $ref: '#/components/schemas/Course'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/Course'
+        400:
+          description: Invalid status value
+          content: {}
+  /bus/routes/{route}/locations:
+    get:
+      tags:
+      - bus
+      summary: Get course by id
+      description: Gets one or more courses by course_id
+      operationId: findRouteLocations
+      parameters:
+        - in: 'path'
+          name: 'route'
+          required: true
+          schema:
+            type: string
+          explode: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                oneOf: 
+                  - $ref: '#/components/schemas/Course'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/Course'
+        400:
+          description: Invalid status value
+          content: {}
+  /bus/routes/{route}/schedule:
+    get:
+      tags:
+      - bus
+      summary: Get course by id
+      description: Gets one or more courses by course_id
+      operationId: findRouteSchedule
+      parameters:
+        - in: 'path'
+          name: 'route'
+          required: true
+          schema:
+            type: string
+          explode: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                oneOf: 
+                  - $ref: '#/components/schemas/Course'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/Course'
+        400:
+          description: Invalid status value
+          content: {}
+  /bus/routes/{route}/arrivals/{stop}:
+    get:
+      tags:
+      - bus
+      summary: Get course by id
+      description: Gets one or more courses by course_id
+      operationId: findRouteArrival
+      parameters:
+        - in: 'path'
+          name: 'route'
+          required: true
+          schema:
+            type: string
+          explode: true
+        - in: 'path'
+          name: 'stop'
+          required: true
+          schema:
+            type: string
+          explode: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                oneOf: 
+                  - $ref: '#/components/schemas/Course'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/Course'
+        400:
+          description: Invalid status value
+          content: {}
+  /bus/stops:
+    get:
+      tags:
+      - bus
+      summary: Paginated list of courses
+      description: Paginated list of all courses for a given semester
+      operationId: findStops
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Stop'
+        400:
+          description: Invalid status value
+          content: {}
+  /bus/stops/{stop}:
+    get:
+      tags:
+      - bus
+      summary: Get course by id
+      description: Gets one or more courses by course_id
+      operationId: findStopById
+      parameters:
+        - in: 'path'
+          name: 'stop'
+          required: true
+          schema:
+            type: string
+          explode: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                oneOf: 
+                  - $ref: '#/components/schemas/Stop'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/Stop'
+        400:
+          description: Invalid status value
+          content: {}
+  /major:
+    get:
+      tags:
+      - major
+      summary: Buildings
+      description: Paginated list of all professors for a given semester
+      operationId: findMajors
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Major'
+        400:
+          description: Invalid status value
+          content: {}
 components:
   schemas:
     Course:
       type: object
       properties:
         course_id:
-          pattern: '[A-Za-z]{4}[0-9]{3}[A-Za-z][A-Za-z]?'
           type: string
+          description: 'A unique string ID with a four-letter dept_id followed by a three digit course number and an optional letter. '
+          pattern: '[A-Za-z]{4}[0-9]{3}[A-Za-z][A-Za-z]?'
+          example: "MATH141"
+          
         name:
           type: string
         dept_id:
@@ -128,16 +535,105 @@ components:
         id:
           type: integer
           format: int64
+    Professor:
+      type: object
+      properties:
+        name:
+          type: string
+        semester:
+          type: integer
+        courses:
+          type: array
+          items:
+            type: string
+        departments:
+          type: array
+          items:
+            type: string
+    Department:
+      type: object
+      properties:
+        dept_id:
+          type: string
+        department:
+          type: string
+    Building:
+      type: object
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+        number:
+          type: integer
+        lng:
+          type: number
+        lat:
+          type: number
+    Route:
+      type: object
+      properties:
+        route_id:
+          type: string
+        title:
+          type: string
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stop'
+        directions:
+          type: object
+          properties:
+            direction_id:
+              type: string
+            title: 
+              type: string
+            stops:
+                type: array
+                items:
+                  type: string
+        paths:
+          type: array
+          items:
+            type: object
+            properties:
+              lat:
+                type: number
+              lon:
+                type: number
+        lat_min:
+          type: number
+        lat_max:
+          type: number
+        lon_min:
+          type: number
+        lon_max:
+          type: number
+    Stop:
+      type: object
+      properties:
+        stop_id:
+          type: string
+        title:
+          type: string
+        lon:
+          type: number
+        lat:
+          type: number
+    Major:
+      type: object
+      properties:
+        major_id:
+          type: string
+        name:
+          type: string
+        college:
+          type: string
+        url:
+          type: string
   parameters:
     course_id:
       name: course_id
       in: query
-      description: "A unique string ID with a four-letter dept_id followed by a three digit course number and an optional letter."
       schema:
-        type: string
-      examples:
-        zero:
-          value: "CMSC132"
-        one:
-          value: "BMGT468Z"
-      required: false
+        $ref: '#/components/schemas/Course/properties/course_id'
