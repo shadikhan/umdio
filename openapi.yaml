@@ -24,7 +24,7 @@ servers:
 - url: https://api.umd.io/v0
 tags:
 - name: courses
-  description: Course data from Testudo
+  description: "University courses and their sections. Scraped from Testudo"
 - name: professors
   description: Professors listed on Testudo
 - name: bus
@@ -41,6 +41,8 @@ paths:
       summary: Paginated list of courses
       description: Paginated list of all courses for a given semester
       operationId: findCourses
+      parameters:
+        - $ref: '#/components/parameters/semester'
       responses:
         200:
           description: successful operation
@@ -196,44 +198,51 @@ paths:
     get:
       tags:
       - map
-      summary: Buildings
-      description: Paginated list of all professors for a given semester
+      summary: List buildings
+      description: Get a list of the available buildings.
       operationId: findBuildings
       responses:
         200:
-          description: successful operation
+          description: Successful Operation
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Building'
-        400:
-          description: Invalid status value
-          content: {}
-  /map/{building}:
+  /map/{building_id}:
     get:
       tags:
       - map
-      summary: Get building by id
-      description: Gets one or more courses by course_id
+      summary: Get buildings
+      description: Get location data about one or more buildings. Comma separated building numbers are the parameters.
       operationId: findBuildingById
       parameters:
         - in: 'path'
-          name: 'building'
+          name: 'building_id'
           required: true
           schema:
-            type: string
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+            example: 226
+          description: "Numeric building ID"
           explode: true
       responses:
         200:
-          description: successful operation
+          description: Successful Operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Course'
-        400:
-          description: Invalid status value
+                oneOf:
+                - $ref: '#/components/schemas/Building'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/Building'
+        404:
+          description: Invalid building code
           content: {}
   /bus/locations:
     get:
@@ -442,21 +451,18 @@ paths:
     get:
       tags:
       - major
-      summary: Buildings
-      description: Paginated list of all professors for a given semester
+      summary: Majors
+      description: List of all majors
       operationId: findMajors
       responses:
         200:
-          description: successful operation
+          description: Successful operation
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Major'
-        400:
-          description: Invalid status value
-          content: {}
 components:
   schemas:
     Course:
@@ -467,15 +473,18 @@ components:
           description: 'A unique string ID with a four-letter dept_id followed by a three digit course number and an optional letter. '
           pattern: '[A-Za-z]{4}[0-9]{3}[A-Za-z][A-Za-z]?'
           example: "MATH141"
-          
         name:
           type: string
+          example: "Calculus II"
         dept_id:
           type: string
+          example: "MATH"
         semester:
           type: integer
+          example: 201908
         credits:
           type: string
+          example: 4
         grading_method:
           type: array
           items:
@@ -559,17 +568,28 @@ components:
           type: string
     Building:
       type: object
+      description: "Represents a building on campus."
       properties:
         name:
           type: string
+          description: "Name of the building"
+          example: "Edward St. John Learning and Teaching Center"
         code:
           type: string
+          description: "Shortened building code. Not all buildings have these."
+          example: "ESJ"
         number:
           type: integer
+          description: "Unique building number"
+          example: 226
         lng:
           type: number
+          description: "Longitude"
+          example: "-76.941914"
         lat:
           type: number
+          description: "Latitude"
+          example: "38.986699"
     Route:
       type: object
       properties:
@@ -625,15 +645,26 @@ components:
       properties:
         major_id:
           type: string
+          example: "COMPUTERSCIENCE"
         name:
           type: string
+          example: "Computer Science"
         college:
           type: string
+          example: "CMNS"
         url:
           type: string
+          example: "https://undergrad.cs.umd.edu/degree-requirements-cs-major"
   parameters:
     course_id:
       name: course_id
       in: query
       schema:
         $ref: '#/components/schemas/Course/properties/course_id'
+    semester:
+      name: semester
+      in: query
+      schema:
+        type: integer
+      description: "A six-digit string <year><month>. For example, “201901” for 2019’s Winter semester or “201808” for 2018’s Fall semseter."
+      example: "201908"
