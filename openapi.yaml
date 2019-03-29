@@ -465,6 +465,30 @@ paths:
                   $ref: '#/components/schemas/Major'
 components:
   schemas:
+    Building:
+      type: object
+      description: "Represents a building on campus."
+      properties:
+        name:
+          type: string
+          description: "Name of the building"
+          example: "Edward St. John Learning and Teaching Center"
+        code:
+          type: string
+          description: "Shortened building code. Not all buildings have these."
+          example: "ESJ"
+        number:
+          type: integer
+          description: "Unique building number"
+          example: 226
+        lng:
+          type: number
+          description: "Longitude"
+          example: "-76.941914"
+        lat:
+          type: number
+          description: "Latitude"
+          example: "38.986699"
     Course:
       type: object
       properties:
@@ -538,58 +562,59 @@ components:
           type: array
           items:
             type: string
-    Section:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-    Professor:
-      type: object
-      properties:
-        name:
-          type: string
-        semester:
-          type: integer
-        courses:
-          type: array
-          items:
-            type: string
-        departments:
-          type: array
-          items:
-            type: string
     Department:
       type: object
       properties:
         dept_id:
           type: string
+          description: "Department code."
+          example: "AMSC"
         department:
           type: string
-    Building:
+          description: "Full name of the department."
+          example: "Applied Mathematics & Scientific Computation"
+    Major:
       type: object
-      description: "Represents a building on campus."
+      properties:
+        major_id:
+          type: string
+          description: "The ID corresponding with a major."
+          example: "COMPUTERSCIENCE"
+        name:
+          type: string
+          description: "The name of a major."
+          example: "Computer Science"
+        college:
+          type: string
+          description: "The college corresponding to the major."
+          example: "CMNS"
+        url:
+          type: string
+          description: "The URL of the main page of a major."
+          example: "https://undergrad.cs.umd.edu/degree-requirements-cs-major"
+    Professor:
+      type: object
       properties:
         name:
           type: string
-          description: "Name of the building"
-          example: "Edward St. John Learning and Teaching Center"
-        code:
-          type: string
-          description: "Shortened building code. Not all buildings have these."
-          example: "ESJ"
-        number:
+          description: "The name of a professor as it appears on Testudo."
+          example: "Mark Wellman"
+        semester:
           type: integer
-          description: "Unique building number"
-          example: 226
-        lng:
-          type: number
-          description: "Longitude"
-          example: "-76.941914"
-        lat:
-          type: number
-          description: "Latitude"
-          example: "38.986699"
+          description: "Six-digit number identifying the semester the course is offered."
+          example: 201908
+        courses:
+          type: array
+          description: "An array of courses that the professor has taught in the given semester."
+          items:
+            type: string
+          example: ["BMGT289B", "BMGT466", "BMGT466F"]
+        departments:
+          type: array
+          description: "An array of the departments a professor has taught in the given semester."
+          items:
+            type: string
+          example: ["BMGT"]
     Route:
       type: object
       properties:
@@ -629,6 +654,12 @@ components:
           type: number
         lon_max:
           type: number
+    Section:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
     Stop:
       type: object
       properties:
@@ -640,21 +671,6 @@ components:
           type: number
         lat:
           type: number
-    Major:
-      type: object
-      properties:
-        major_id:
-          type: string
-          example: "COMPUTERSCIENCE"
-        name:
-          type: string
-          example: "Computer Science"
-        college:
-          type: string
-          example: "CMNS"
-        url:
-          type: string
-          example: "https://undergrad.cs.umd.edu/degree-requirements-cs-major"
   parameters:
     course_id:
       name: course_id
