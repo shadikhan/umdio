@@ -132,8 +132,8 @@ paths:
     get:
       tags:
       - courses
-      summary: Get course by id
-      description: Gets one or more courses by section_id
+      summary: Get sections by id
+      description: Gets one or more sections by section_id
       operationId: findSectionsById
       parameters:
         - in: 'path'
@@ -161,7 +161,7 @@ paths:
       tags:
       - courses
       summary: List departments
-      description: Gets one or more courses by course_id
+      description: Get a list of all department ids and names.
       operationId: findDepartments
       responses:
         200:
@@ -248,8 +248,8 @@ paths:
     get:
       tags:
       - bus
-      summary: Paginated list of courses
-      description: Paginated list of all courses for a given semester
+      summary: Get bus locations
+      description: Get locations of all the umd buses.
       operationId: findLocations
       responses:
         200:
@@ -257,18 +257,20 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Route'
-        400:
-          description: Invalid status value
-          content: {}
+                type: object
+                properties:
+                  vehicles:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Vehicle'
+                  copyright:
+                    type: string
   /bus/routes:
     get:
       tags:
       - bus
-      summary: Paginated list of courses
-      description: Paginated list of all courses for a given semester
+      summary: List routes
+      description: List all the bus routes. Returns the route ids and the names of the routes.
       operationId: findRoutes
       responses:
         200:
@@ -278,16 +280,18 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Route'
-        400:
-          description: Invalid status value
-          content: {}
+                  type: object
+                  properties:
+                    route_id:
+                      type: string
+                    title:
+                      type: string
   /bus/routes/{route}:
     get:
       tags:
       - bus
-      summary: Get course by id
-      description: Gets one or more courses by course_id
+      summary: Get routes
+      description: Get detailed info about one or more bus routes.
       operationId: findRouteById
       parameters:
         - in: 'path'
@@ -303,19 +307,16 @@ paths:
             application/json:
               schema:
                 oneOf: 
-                  - $ref: '#/components/schemas/Course'
+                  - $ref: '#/components/schemas/Route'
                   - type: array
                     items:
-                      $ref: '#/components/schemas/Course'
-        400:
-          description: Invalid status value
-          content: {}
+                      $ref: '#/components/schemas/Route'
   /bus/routes/{route}/locations:
     get:
       tags:
       - bus
-      summary: Get course by id
-      description: Gets one or more courses by course_id
+      summary: Locate buses on a route
+      description: Get the locations of buses along a bus route.
       operationId: findRouteLocations
       parameters:
         - in: 'path'
@@ -330,20 +331,20 @@ paths:
           content:
             application/json:
               schema:
-                oneOf: 
-                  - $ref: '#/components/schemas/Course'
-                  - type: array
+                type: object
+                properties:
+                  vehicles:
+                    type: array
                     items:
-                      $ref: '#/components/schemas/Course'
-        400:
-          description: Invalid status value
-          content: {}
-  /bus/routes/{route}/schedule:
+                      $ref: '#/components/schemas/Vehicle'
+                  copyright:
+                    type: string
+  /bus/routes/{route}/schedules:
     get:
       tags:
       - bus
-      summary: Get course by id
-      description: Gets one or more courses by course_id
+      summary: Get route schedules
+      description: Get the schedules for a route.
       operationId: findRouteSchedule
       parameters:
         - in: 'path'
@@ -358,20 +359,45 @@ paths:
           content:
             application/json:
               schema:
-                oneOf: 
-                  - $ref: '#/components/schemas/Course'
-                  - type: array
-                    items:
-                      $ref: '#/components/schemas/Course'
-        400:
-          description: Invalid status value
+                type: array
+                items:
+                  type: object
+                  properties:
+                    days:
+                     type: string
+                    direction:
+                      type: string
+                    stops:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          stop_id:
+                            type: string
+                          name:
+                            type: string
+                    trips:
+                      type: array
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            stop_id:
+                              type: string
+                            arrival_time:
+                              type: string
+                            arrival_time_secs:
+                              type: string
+        404:
+          description: Invalid route
           content: {}
   /bus/routes/{route}/arrivals/{stop}:
     get:
       tags:
       - bus
-      summary: Get course by id
-      description: Gets one or more courses by course_id
+      summary: Get predicted arrivals
+      description: Get the predicted arrivals for a particular stop on a route.
       operationId: findRouteArrival
       parameters:
         - in: 'path'
@@ -392,11 +418,27 @@ paths:
           content:
             application/json:
               schema:
-                oneOf: 
-                  - $ref: '#/components/schemas/Course'
-                  - type: array
-                    items:
-                      $ref: '#/components/schemas/Course'
+                type: object
+                properties:
+                  predictions:
+                    type: object
+                    properties:
+                      agencyTitle: 
+                        type: string
+                      routeTag:
+                        type: string
+                      routeTitle:
+                        type: string
+                      direction:
+                        type: object
+                        properties:
+                          title:
+                            type: string
+                          prediction:
+                            type: array
+                            items: 
+                              $ref: '#/components/schemas/Prediction'
+                    
         400:
           description: Invalid status value
           content: {}
@@ -404,8 +446,8 @@ paths:
     get:
       tags:
       - bus
-      summary: Paginated list of courses
-      description: Paginated list of all courses for a given semester
+      summary: List stops
+      description: Get information about all the stops.
       operationId: findStops
       responses:
         200:
@@ -415,16 +457,18 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Stop'
-        400:
-          description: Invalid status value
-          content: {}
+                  type: object
+                  properties:
+                    stop_id:
+                      type: string
+                    title:
+                      type: string
   /bus/stops/{stop}:
     get:
       tags:
       - bus
-      summary: Get course by id
-      description: Gets one or more courses by course_id
+      summary: Get stops
+      description: Get full information about a stop.
       operationId: findStopById
       parameters:
         - in: 'path'
@@ -513,55 +557,66 @@ components:
           type: array
           items:
             type: string
+          example: ["Regular", "Pass-Fail", "Audit"]
         core:
           type: array
           items:
             type: string
+          example: ["MS"]
         gen_ed:
           type: array
           items:
             type: string
+          example: []
         description:
           type: string
+          example: "Continuation of MATH140, including techniques of integration, improper integrals, applications of integration (such as volumes, work, arc length, moments), inverse functions, exponential and logarithmic functions, sequences and series"
         relationships:
           type: object
           properties:
             coreqs:
               type: array
+              nullable: true
               items:
                 type: string
             restrictions:
               type: array
+              nullable: true
               items:
                 type: string
             credit_granted_for:
               type: array
+              nullable: true
               items:
                 type: string
+              example: "MATH121, MATH131, MATH141, or MATH221."
             also_offered_as:
               type: array
+              nullable: true
               items:
                 type: string
             formerly:
               type: array
+              nullable: true
               items:
                 type: string
             credit_only_granted_for:
               type: array
+              nullable: true
               items:
                 type: string
+            additional_info:
+              type: string
+              example: "Or 1 course with a minimum grade of B- from (MATH130, MATH136); and permission of CMNS-Mathematics department.  All sections will require the use of a TI graphics calculator. Instructor will use a TI-83, TI-83+, TI 84, TI 84+, TI 86, or TI 89 calculator."
             prereqs:
-              type: array
-              items:
-                type: string
-            restricted_to:
-              type: array
-              items:
-                type: string
+              type: string
+              nullable: true
+              example: "Minimum grade of C- in MATH140."
         sections:
           type: array
           items:
             type: string
+          example: ["MATH141-0111", "MATH141-0121", "MATH141-0122", "MATH141-0131", "MATH141-0141", "MATH141-0211", "MATH141-0221", "MATH141-0231", "MATH141-0251", "MATH141-0311", "MATH141-0321", "MATH141-0331", "MATH141-0341", "MATH141-0411", "MATH141-0421", "MATH141-0431", "MATH141-0441", "MATH141-FC01", "MATH141-FC02", "MATH141-FC03"]
     Department:
       type: object
       properties:
@@ -592,6 +647,25 @@ components:
           type: string
           description: "The URL of the main page of a major."
           example: "https://undergrad.cs.umd.edu/degree-requirements-cs-major"
+    Prediction:
+      type: object
+      properties:
+        isDeparture: 
+          type: string
+        mintues:
+          type: string
+        seconds:
+          type: string
+        vehicle:
+          type: string
+        affectedByLayover:
+          type: string
+        block:
+          type: string
+        dirTag:
+          type: string
+        epochTime:
+          type: string
     Professor:
       type: object
       properties:
@@ -657,9 +731,37 @@ components:
     Section:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
+        section_id:
+          type: string
+        course_id:
+          type: string
+        number:
+          type: string
+        instructors:
+          type: array
+          items:
+            type: string
+        seats:
+          type: string
+        waitlist:
+          type: string
+        semester:
+          type: number
+        meetings:
+          type: object
+          properties:
+            days:
+              type: string
+            start_time:
+              type: string
+            end_time:
+              type: string
+            building:
+              type: string
+            room:
+              type: string
+            classtype:
+              type: string
     Stop:
       type: object
       properties:
@@ -671,6 +773,27 @@ components:
           type: number
         lat:
           type: number
+    Vehicle:
+      type: object
+      properties:
+        id:
+          type: string
+        lon:
+          type: string
+        routeTag:
+          type: string
+        predictable:
+          type: string
+        speedKmHr:
+          type: string
+        dirTag:
+          type: string
+        heading:
+          type: string
+        lat:
+          type: string
+        secsSinceReport:
+          type: string
   parameters:
     course_id:
       name: course_id
